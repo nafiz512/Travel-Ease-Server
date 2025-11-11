@@ -48,14 +48,50 @@ async function run() {
             res.send(result);
         });
         app.get("/allvehicles", async (req, res) => {
-            const cursor = await car_coll.find();
+            const email = req.query.email;
+
+            const query = {};
+            let projectFields = {};
+            if (email) {
+                query.userEmail = email;
+                projectFields = {
+                    vehicleName: 1,
+                    location: 1,
+                    pricePerDay: 1,
+                    availability: 1,
+                };
+            }
+
+            const cursor = car_coll.find(query).project(projectFields);
             const result = await cursor.toArray();
             res.send(result);
         });
-        app.get("/allvehicles/:id", async (req, res) => {
-            const id = req.params.id;
-            const cursor = await car_coll.findOne({ _id: new ObjectId(id) });
-            res.send(cursor);
+        app.get("/filtered-vehicle", async (req, res) => {
+            try {
+                const { sortby, limit } = req.query;
+
+                let cursor;
+
+                if (sortby === "ratings") {
+                    cursor = car_coll.find().sort({ ratings: -1 });
+                } else if (sortby === "createdAt") {
+                    cursor = car_coll.find().sort({ createdAt: -1 });
+                } else {
+                    return res
+                        .status(400)
+                        .send({ message: "Invalid fetch criteria" });
+                }
+
+                if (limit) {
+                    cursor = cursor.limit(parseInt(limit));
+                }
+
+                const result = await cursor.toArray();
+                res.send(result);
+            } catch (error) {
+                console.error("Error fetching vehicles:", error);
+                res.status(500).send({ message: "Internal server error" });
+            }
         });
 
         await client.db("admin").command({ ping: 1 });
