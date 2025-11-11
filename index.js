@@ -39,6 +39,15 @@ async function run() {
                 res.send(add);
             }
         });
+        //cars db
+        const car_db = client.db("CarDb");
+        const car_coll = car_db.collection("CarColl");
+        //car api
+        app.post("/addvehicle", async (req, res) => {
+            const result = await car_coll.insertOne(req.body);
+            res.send(result);
+        });
+
         await client.db("admin").command({ ping: 1 });
         console.log(
             "Pinged your deployment. You successfully connected to MongoDB!"
