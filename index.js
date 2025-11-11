@@ -93,6 +93,24 @@ async function run() {
                 res.status(500).send({ message: "Internal server error" });
             }
         });
+        app.get("/vehicle/:id", async (req, res) => {
+            const id = req.params.id;
+            const cursor = await car_coll.findOne({ _id: new ObjectId(id) });
+            res.send(cursor);
+        });
+        app.patch("/vehicle/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const update = { $set: req.body };
+            const options = {};
+            const result = await car_coll.updateOne(query, update, options);
+            res.send(result);
+        });
+        app.delete("/vehicle/:id", async (req, res) => {
+            const query = { _id: new ObjectId(req.params.id) };
+            const result = await car_coll.deleteOne(query);
+            res.send(result);
+        });
 
         await client.db("admin").command({ ping: 1 });
         console.log(
