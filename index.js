@@ -47,6 +47,12 @@ async function run() {
             const result = await car_coll.insertOne(req.body);
             res.send(result);
         });
+        app.get("/allvehicles", async (req, res) => {
+            const cursor = await car_coll.find();
+            const result = await cursor.toArray();
+            res.send(result);
+            // res.send("ok got it ");
+        });
 
         await client.db("admin").command({ ping: 1 });
         console.log(
