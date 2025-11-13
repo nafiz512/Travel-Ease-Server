@@ -125,20 +125,26 @@ async function run() {
         });
         app.get("/vehicle/:id", verifyFirebaseToken, async (req, res) => {
             const id = req.params.id;
-            console.log(req);
-
             const cursor = await car_coll.findOne({ _id: new ObjectId(id) });
             res.send(cursor);
         });
-        app.patch("/vehicle/:id", async (req, res) => {
+        app.patch("/vehicle/:id", verifyFirebaseToken, async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id) };
+            const email = req.query.email;
+            if (req.verifiedEmail !== email) {
+                return res.status(401).send("unathorized access");
+            }
+            const query = { _id: new ObjectId(id), userEmail: email };
             const update = { $set: req.body };
             const options = {};
             const result = await car_coll.updateOne(query, update, options);
             res.send(result);
         });
-        app.delete("/vehicle/:id", async (req, res) => {
+        app.delete("/vehicle/:id", verifyFirebaseToken, async (req, res) => {
+            const email = req.query.email;
+            if (req.verifiedEmail !== email) {
+                return res.status(401).send("unathorized access");
+            }
             const query = { _id: new ObjectId(req.params.id) };
             const result = await car_coll.deleteOne(query);
             res.send(result);
@@ -150,15 +156,17 @@ async function run() {
             const result = await bookings_coll.insertOne(req.body);
             res.send(result);
         });
-        app.get("/bookings", async (req, res) => {
+        app.get("/bookings", verifyFirebaseToken, async (req, res) => {
             const email = req.query.email;
+            if (req.verifiedEmail !== email)
+                res.status(401).send("unauthorized");
             if (email) {
                 const query = { userEmail: email };
                 const cursor = await bookings_coll.find(query);
                 const result = await cursor.toArray();
                 res.send(result);
             } else {
-                res.send("no email found");
+                res.send("unauthorized");
             }
         });
 
