@@ -4,7 +4,7 @@ const admin = require("firebase-admin");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 const app = express();
-const PORT = process.env.port || 5000;
+const PORT = 5000;
 
 //midleware
 app.use(express.json());
@@ -22,11 +22,17 @@ const client = new MongoClient(uri, {
     },
 });
 
-const serviceAccount = require("./email-password-auth-TravelEase.json");
+// index.js
+const decoded = Buffer.from(
+    process.env.FIREBASE_SERVICE_KEY,
+    "base64"
+).toString("utf8");
+const serviceAccount = JSON.parse(decoded);
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
 });
+
 const verifyFirebaseToken = async (req, res, next) => {
     const authToken = req.headers.usertoken;
     if (!authToken)
@@ -55,7 +61,7 @@ projectFields = {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        //await client.connect();
         //database apis
         //user related api
         const user_db = client.db("usersDb");
@@ -170,10 +176,10 @@ async function run() {
             }
         });
 
-        await client.db("admin").command({ ping: 1 });
-        console.log(
-            "Pinged your deployment. You successfully connected to MongoDB!"
-        );
+        // await client.db("admin").command({ ping: 1 });
+        // console.log(
+        //     "Pinged your deployment. You successfully connected to MongoDB!"
+        // );
     } finally {
         // Ensures that the client will close when you finish/error
         //await client.close();
@@ -183,7 +189,7 @@ run().catch(console.dir);
 
 // Simple Route
 app.get("/", (req, res) => {
-    res.send("server running on port ", PORT);
+    res.send("server running ");
 });
 
 // Start the server
