@@ -1,5 +1,6 @@
 const express = require("express");
 require("dotenv").config();
+const admin = require("firebase-admin");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 const app = express();
@@ -20,6 +21,31 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     },
 });
+
+const serviceAccount = require("./email-password-auth-TravelEase.json");
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
+const verifyFirebaseToken = async (req, res, next) => {
+    const authToken = req.headers.usertoken;
+    if (!authToken)
+        return res.status(401).send({ message: "unauthorized access" });
+
+    const token = authToken.split(" ")[1];
+    if (!token) return res.status(401).send({ message: "unauthorized access" });
+    try {
+        // console.log(token);
+
+        const verify = await admin.auth().verifyIdToken(token);
+        // console.log(verify);
+
+        req.verifiedEmail = verify.email;
+    } catch {
+        return res.status(401).send({ message: "unauthorized access" });
+    }
+    next();
+};
 
 async function run() {
     try {
@@ -43,7 +69,10 @@ async function run() {
         const car_db = client.db("CarDb");
         const car_coll = car_db.collection("CarColl");
         //car api
-        app.post("/addvehicle", async (req, res) => {
+        app.post("/addvehicle", verifyFirebaseToken, async (req, res) => {
+            if (req.verifiedEmail !== req.body.userEmail) {
+                return res.status(401).send("unathorized access");
+            }
             const result = await car_coll.insertOne(req.body);
             res.send(result);
         });

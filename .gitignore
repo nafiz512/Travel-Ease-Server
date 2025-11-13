@@ -1,3 +1,5 @@
 .env
 node_modules
 .vercel
+
+email-password-auth-TravelEase.json
