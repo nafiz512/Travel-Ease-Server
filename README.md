@@ -1,4 +1,4 @@
-# Travel-Ease-Server
+# Travel-Ease-Client
 
 # 🌍 TravelEase — A Modern Vehicle Rental Platform
 
@@ -7,31 +7,73 @@
 
 ---
 
-## ✨ Features
+## 🌟 Key Features
 
-### 🔐 User & Auth
+-   **Dynamic Home Page** — Includes an engaging hero section, the latest 6 vehicles, and featured sections like “Top Categories” and “About TravelEase”.
+-   **Firebase Authentication** — Secure email/password and Google login; protected routes for authenticated users.
+-   **Vehicle Management System** — Add, update, and delete your own vehicles; view your listed items in “My Vehicles”.
+-   **Booking Functionality** — Book vehicles from details pages; users can manage their own bookings from “My Bookings”.
+-   **Responsive and Elegant UI** — Fully responsive layout built with **Tailwind CSS**, **Framer Motion**, and **React Spring** for smooth animations.
+-   **Smart Data Handling** — Integrated **MongoDB Atlas** for scalable data storage; supports advanced filtering and sorting.
+-   **Theme Customization** — Light/Dark mode toggle for better user experience.
+-   **Loading & Error Handling** — Skeleton loaders, toasts, and custom 404 page for a polished UX.
+-   **Deployed with Netlify** — Fast, secure, and globally available hosting.
 
--   Secure **Firebase Authentication** (Email/Password & Social Login)
--   Protected routes using **Firebase ID Tokens**
--   Token-based access for backend APIs (with middleware verification)
+---
 
-### 🚘 Vehicle Management
+## 🧩 Tech Stack
 
--   Add, update, or delete your own listed vehicles
--   Real-time CRUD operations with MongoDB Atlas
--   Dynamic filtering and sorting (by ratings or creation time)
+**Frontend:**
 
-### 📅 Booking System
+-   React (Vite)
+-   Tailwind CSS + DaisyUI
+-   Framer Motion
+-   React Spring
+-   Axios
+-   React Router DOM
+-   Date-fns
 
--   Rent available vehicles with custom date selection
--   View all your active and past bookings
--   Integrated availability tracking
+**Backend:**
 
-### 💅 UI & UX
+-   Node.js + Express.js
+-   MongoDB Atlas
+-   Firebase Admin SDK (for token verification)
 
--   Built with **Tailwind CSS v4** and **DaisyUI** for a modern design
--   Smooth animations with **Framer Motion** & **React Spring**
--   Fully responsive layout — works on all devices
+**Authentication:**
+
+-   Firebase Authentication (Email/Password & Google Sign-In)
+
+**Deployment:**
+
+-   Frontend → Netlify
+-   Backend → Render / Vercel / Railway (depending on configuration)
+
+---
+
+## 🧭 Pages Overview
+
+-   **Home Page:** Hero section, featured vehicles, top-rated owners, and “About TravelEase”.
+-   **All Vehicles Page:** Browse and sort vehicles by price, ratings, or date added.
+-   **Vehicle Details (Private):** Detailed view with “Book Now” option.
+-   **Add Vehicle Page:** Add a new vehicle (only available to logged-in users).
+-   **My Vehicles:** Manage your own listings (update/delete).
+-   **My Bookings:** View your bookings.
+-   **Authentication:** Login, Register, and Google Sign-In pages.
+-   **404 Page:** Custom error page for invalid routes.
+
+---
+
+## 🔐 Protected Routes
+
+The following routes are secured and only accessible to logged-in users:
+
+-   `/addVehicle`
+-   `/myVehicles`
+-   `/myBookings`
+-   `/updateVehicle/:id`
+-   `/vehicle/:id`
+
+---
 
 ### ☁️ Deployment
 
