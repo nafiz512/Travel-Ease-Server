@@ -46,7 +46,12 @@ const verifyFirebaseToken = async (req, res, next) => {
     }
     next();
 };
-
+projectFields = {
+    vehicleName: 1,
+    location: 1,
+    pricePerDay: 1,
+    availability: 1,
+};
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
@@ -77,20 +82,16 @@ async function run() {
             res.send(result);
         });
         app.get("/allvehicles", async (req, res) => {
+            const cursor = car_coll.find().project();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+        app.get("/myvehicles", verifyFirebaseToken, async (req, res) => {
             const email = req.query.email;
+            if (req.verifiedEmail !== email)
+                return res.status(401).send("unathorized access");
 
-            const query = {};
-            let projectFields = {};
-            if (email) {
-                query.userEmail = email;
-                projectFields = {
-                    vehicleName: 1,
-                    location: 1,
-                    pricePerDay: 1,
-                    availability: 1,
-                };
-            }
-
+            const query = { userEmail: email };
             const cursor = car_coll.find(query).project(projectFields);
             const result = await cursor.toArray();
             res.send(result);
@@ -122,8 +123,10 @@ async function run() {
                 res.status(500).send({ message: "Internal server error" });
             }
         });
-        app.get("/vehicle/:id", async (req, res) => {
+        app.get("/vehicle/:id", verifyFirebaseToken, async (req, res) => {
             const id = req.params.id;
+            console.log(req);
+
             const cursor = await car_coll.findOne({ _id: new ObjectId(id) });
             res.send(cursor);
         });
