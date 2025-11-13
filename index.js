@@ -111,6 +111,24 @@ async function run() {
             const result = await car_coll.deleteOne(query);
             res.send(result);
         });
+        //bookings api
+        const bookings_coll = car_db.collection("Bookings");
+        app.post("/book-vehicle", async (req, res) => {
+            // const query = { vehicleId: req.body.vehicleId };
+            const result = await bookings_coll.insertOne(req.body);
+            res.send(result);
+        });
+        app.get("/bookings", async (req, res) => {
+            const email = req.query.email;
+            if (email) {
+                const query = { userEmail: email };
+                const cursor = await bookings_coll.find(query);
+                const result = await cursor.toArray();
+                res.send(result);
+            } else {
+                res.send("no email found");
+            }
+        });
 
         await client.db("admin").command({ ping: 1 });
         console.log(
